@@ -3,9 +3,852 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hello World</title>
+    <title>Donation Receipt Calculator | Arato Legal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Petrona:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --cream: #fefaf1;
+            --olive: #1d2f1a;
+            --gold: #916a27;
+            --sage: #8b9384;
+            --text: #2c2c2c;
+            --text-light: #5a5a5a;
+            --border: #d9d3c7;
+            --card-bg: #ffffff;
+            --success: #2e6b2e;
+            --warning: #b85c00;
+            --danger: #a83232;
+            --info-bg: #eef4ee;
+            --warning-bg: #fef3e6;
+            --danger-bg: #fdeaea;
+            --radius: 6px;
+            --max-width: 760px;
+            --font-heading: 'Petrona', serif;
+            --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--cream);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Hide number input spinners */
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type="number"] { -moz-appearance: textfield; }
+
+        header {
+            background: var(--cream);
+            border-bottom: 2px solid var(--border);
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: var(--font-heading);
+            font-weight: 900;
+            font-size: 1.5rem;
+            color: var(--olive);
+            text-decoration: none;
+        }
+
+        .tagline {
+            font-family: var(--font-heading);
+            font-size: 0.95rem;
+            color: var(--gold);
+            font-style: italic;
+        }
+
+        main {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 2rem 1.5rem 3rem;
+        }
+
+        h1 {
+            font-family: var(--font-heading);
+            font-weight: 900;
+            font-size: 2rem;
+            color: var(--olive);
+            margin-bottom: 0.5rem;
+        }
+
+        .intro {
+            color: var(--text-light);
+            margin-bottom: 2rem;
+            font-size: 1.05rem;
+        }
+
+        /* Primary inputs card */
+        .primary-inputs {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        }
+
+        .primary-inputs h2 {
+            font-family: var(--font-heading);
+            font-weight: 700;
+            font-size: 1.15rem;
+            color: var(--olive);
+            margin-bottom: 1rem;
+        }
+
+        .field-row {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .field-group {
+            flex: 1;
+            margin-bottom: 0.75rem;
+        }
+
+        .field-group label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 0.3rem;
+        }
+
+        .field-group select,
+        .field-group input[type="number"] {
+            width: 100%;
+            padding: 0.6rem 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 1rem;
+            font-family: var(--font-body);
+            background: #fff;
+            color: var(--text);
+            transition: border-color 0.2s;
+        }
+
+        .field-group select:focus,
+        .field-group input[type="number"]:focus {
+            outline: none;
+            border-color: var(--gold);
+            box-shadow: 0 0 0 2px rgba(145, 106, 39, 0.15);
+        }
+
+        .input-with-prefix {
+            position: relative;
+        }
+
+        .input-with-prefix::before {
+            content: "$";
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+            font-size: 1rem;
+            pointer-events: none;
+        }
+
+        .input-with-prefix input {
+            padding-left: 1.5rem !important;
+        }
+
+        .help-text {
+            font-size: 0.78rem;
+            color: var(--text-light);
+            margin-top: 0.2rem;
+        }
+
+        /* Type selector */
+        .type-selector {
+            margin-bottom: 1.5rem;
+        }
+
+        .type-selector h2 {
+            font-family: var(--font-heading);
+            font-weight: 700;
+            font-size: 1.15rem;
+            color: var(--olive);
+            margin-bottom: 0.75rem;
+        }
+
+        .type-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+        }
+
+        .type-card {
+            background: var(--card-bg);
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.25rem 1rem;
+            cursor: pointer;
+            text-align: center;
+            transition: border-color 0.2s, background-color 0.2s, transform 0.1s;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        }
+
+        .type-card:hover {
+            border-color: var(--sage);
+            transform: translateY(-1px);
+        }
+
+        .type-card.active {
+            border-color: var(--olive);
+            background: var(--info-bg);
+        }
+
+        .type-card .card-icon {
+            font-size: 1.75rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .type-card .card-title {
+            font-family: var(--font-heading);
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--olive);
+            margin-bottom: 0.25rem;
+        }
+
+        .type-card .card-desc {
+            font-size: 0.78rem;
+            color: var(--text-light);
+            line-height: 1.4;
+        }
+
+        /* Dynamic form */
+        .donation-form {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            display: none;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        }
+
+        .donation-form.visible {
+            display: block;
+        }
+
+        .donation-form h3 {
+            font-family: var(--font-heading);
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: var(--olive);
+            margin-bottom: 1rem;
+        }
+
+        /* Info/warning boxes */
+        .info-box {
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            margin: 0.75rem 0;
+            line-height: 1.5;
+        }
+
+        .info-box.info { background: var(--info-bg); color: var(--success); border-left: 3px solid var(--success); }
+        .info-box.warning { background: var(--warning-bg); color: var(--warning); border-left: 3px solid var(--warning); }
+        .info-box.danger { background: var(--danger-bg); color: var(--danger); border-left: 3px solid var(--danger); }
+
+        /* Election slider area */
+        .election-section {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+            display: none;
+        }
+
+        .election-section.visible { display: block; }
+
+        .election-section input[type="range"] {
+            width: 100%;
+            margin: 0.5rem 0;
+            accent-color: var(--gold);
+        }
+
+        .election-values {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+
+        /* Results */
+        .results {
+            background: var(--card-bg);
+            border: 2px solid var(--olive);
+            border-radius: var(--radius);
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+            display: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .results.visible {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .results-header {
+            background: var(--olive);
+            color: var(--cream);
+            padding: 0.875rem 1.5rem;
+            font-family: var(--font-heading);
+            font-weight: 700;
+            font-size: 1.05rem;
+        }
+
+        .results-body {
+            padding: 1.25rem 1.5rem;
+        }
+
+        .result-section-label {
+            margin: 0.875rem 0 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--sage);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            padding: 0.4rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .result-row:last-child { border-bottom: none; }
+
+        .result-row .label {
+            font-size: 0.875rem;
+            color: var(--text-light);
+        }
+
+        .result-row .value {
+            font-weight: 600;
+            font-size: 0.875rem;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .result-row.subtotal {
+            padding: 0.5rem 0;
+            border-bottom-width: 2px;
+        }
+
+        .result-row.subtotal .label {
+            font-weight: 600;
+            color: var(--text);
+            font-size: 0.875rem;
+        }
+
+        .result-row.subtotal .value {
+            font-weight: 700;
+            font-size: 0.9375rem;
+            color: var(--olive);
+        }
+
+        .result-row.total {
+            padding: 0.75rem 0 0.5rem;
+            border-bottom: none;
+            margin-top: 0.25rem;
+        }
+
+        .result-row.total .label {
+            font-family: var(--font-heading);
+            font-weight: 700;
+            color: var(--olive);
+            font-size: 1.0625rem;
+        }
+
+        .result-row.total .value {
+            font-family: var(--font-heading);
+            font-weight: 900;
+            font-size: 1.375rem;
+            color: var(--success);
+        }
+
+        .result-row.effective {
+            padding-bottom: 0.75rem;
+        }
+
+        .result-row.effective .label {
+            font-size: 0.875rem;
+            color: var(--text-light);
+        }
+
+        .result-row.effective .value {
+            color: var(--gold);
+            font-weight: 700;
+            font-size: 0.9375rem;
+        }
+
+        .reset-btn {
+            display: inline-block;
+            margin-top: 0.75rem;
+            background: var(--gold);
+            color: var(--cream);
+            border: none;
+            padding: 0.5rem 1.25rem;
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            font-family: var(--font-body);
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .reset-btn:hover { background: #7a5920; }
+
+        /* Notes */
+        .notes {
+            margin-top: 1.5rem;
+        }
+
+        .notes summary {
+            font-family: var(--font-heading);
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--olive);
+            cursor: pointer;
+            padding: 0.5rem 0;
+        }
+
+        .notes ul {
+            margin: 0.75rem 0 0 1.25rem;
+            font-size: 0.85rem;
+            color: var(--text-light);
+            line-height: 1.7;
+        }
+
+        footer {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 1.5rem;
+            border-top: 1px solid var(--border);
+            font-size: 0.8rem;
+            color: var(--text-light);
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.25rem;
+            }
+
+            h1 { font-size: 1.5rem; }
+
+            .type-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .field-row {
+                flex-direction: column;
+                gap: 0;
+            }
+
+            .results-body { padding: 1rem 1.25rem; }
+        }
+    </style>
 </head>
 <body>
-    <h1>Hello World</h1>
+    <header>
+        <span class="logo">Arato Legal</span>
+        <span class="tagline">Uncommon counsel for the common good.</span>
+    </header>
+
+    <main>
+        <h1>Donation Receipt Calculator</h1>
+        <p class="intro">Estimate the eligible amount for a Canadian donation receipt and your tax credit savings.</p>
+
+        <div class="primary-inputs">
+            <h2>Your Information</h2>
+            <div class="field-row">
+                <div class="field-group">
+                    <label for="province">Province / Territory</label>
+                    <select id="province">
+                        <option value="AB">Alberta</option>
+                        <option value="BC">British Columbia</option>
+                        <option value="MB">Manitoba</option>
+                        <option value="NB">New Brunswick</option>
+                        <option value="NL">Newfoundland and Labrador</option>
+                        <option value="NS">Nova Scotia</option>
+                        <option value="NT">Northwest Territories</option>
+                        <option value="NU">Nunavut</option>
+                        <option value="ON" selected>Ontario</option>
+                        <option value="PE">Prince Edward Island</option>
+                        <option value="QC">Quebec</option>
+                        <option value="SK">Saskatchewan</option>
+                        <option value="YT">Yukon</option>
+                    </select>
+                </div>
+                <div class="field-group">
+                    <label for="income">Annual Taxable Income</label>
+                    <div class="input-with-prefix">
+                        <input type="number" id="income" min="0" step="1000" placeholder="e.g. 80000">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="type-selector">
+            <h2>Donation Type</h2>
+            <div class="type-cards">
+                <div class="type-card" data-type="cash" tabindex="0" role="radio" aria-checked="false">
+                    <span class="card-icon">$</span>
+                    <div class="card-title">Cash Donation</div>
+                    <div class="card-desc">Money, cheque, or electronic transfer</div>
+                </div>
+                <div class="type-card" data-type="giftInKind" tabindex="0" role="radio" aria-checked="false">
+                    <span class="card-icon">&#127873;</span>
+                    <div class="card-title">Gift in Kind</div>
+                    <div class="card-desc">Non-cash property (stocks, real estate, art)</div>
+                </div>
+                <div class="type-card" data-type="splitReceipt" tabindex="0" role="radio" aria-checked="false">
+                    <span class="card-icon">&#8651;</span>
+                    <div class="card-title">Split Receipting</div>
+                    <div class="card-desc">Donor receives an advantage in return</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="donation-form" id="form-cash">
+            <h3>Cash Donation Details</h3>
+            <div class="field-group">
+                <label for="cashAmount">Donation Amount</label>
+                <div class="input-with-prefix">
+                    <input type="number" id="cashAmount" min="0" step="0.01" placeholder="0.00">
+                </div>
+            </div>
+        </div>
+
+        <div class="donation-form" id="form-giftInKind">
+            <h3>Gift in Kind Details</h3>
+            <div class="field-group">
+                <label for="gikFmv">Fair Market Value of Property</label>
+                <div class="input-with-prefix">
+                    <input type="number" id="gikFmv" min="0" step="0.01" placeholder="0.00">
+                </div>
+            </div>
+            <div class="field-group">
+                <label for="gikAcb">Your Cost / Adjusted Cost Base</label>
+                <div class="input-with-prefix">
+                    <input type="number" id="gikAcb" min="0" step="0.01" placeholder="0.00">
+                </div>
+                <span class="help-text">Original cost or adjusted cost base of the property.</span>
+            </div>
+            <div class="election-section" id="electionSection">
+                <div class="info-box info">
+                    Because the FMV exceeds both $1,000 and your cost, you may elect a deemed FMV between your cost and the actual FMV to reduce capital gains (ITA s. 118.1(6)).
+                </div>
+                <div class="field-group">
+                    <label for="electionSlider">Elected Deemed FMV: <strong id="electionValue">$0</strong></label>
+                    <input type="range" id="electionSlider" min="0" max="0" step="1">
+                    <div class="election-values">
+                        <span id="electionMin">$0 (your cost)</span>
+                        <span id="electionMax">$0 (full FMV)</span>
+                    </div>
+                </div>
+                <div class="field-group" style="margin-top: 0.5rem;">
+                    <span class="help-text" id="capitalGainNote"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="donation-form" id="form-splitReceipt">
+            <h3>Split Receipting Details</h3>
+            <div class="field-group">
+                <label for="srFmv">FMV of Gift / Cash Donated</label>
+                <div class="input-with-prefix">
+                    <input type="number" id="srFmv" min="0" step="0.01" placeholder="0.00">
+                </div>
+            </div>
+            <div class="field-group">
+                <label for="srAdvantage">Value of Advantage Received</label>
+                <div class="input-with-prefix">
+                    <input type="number" id="srAdvantage" min="0" step="0.01" placeholder="0.00">
+                </div>
+                <span class="help-text">Value of what the donor receives in return (e.g., dinner, gift bag, tickets).</span>
+            </div>
+            <div id="srMessages"></div>
+        </div>
+
+        <div class="results" id="results" aria-live="polite">
+            <div class="results-header">Your Tax Credit Estimate</div>
+            <div class="results-body" id="resultsBody"></div>
+        </div>
+
+        <details class="notes">
+            <summary>How this calculator works</summary>
+            <ul>
+                <li><strong>Cash donations</strong> are receipted at face value.</li>
+                <li><strong>Gifts in kind</strong> are receipted at fair market value. If FMV exceeds both $1,000 and your cost, you may elect a lower deemed FMV to reduce the capital gain (ITA s. 118.1(6)). An independent appraisal may be required for property valued over $1,000.</li>
+                <li><strong>Split receipting</strong> applies when the donor receives an advantage. The eligible amount is FMV minus the advantage. A de minimis rule (ITA s. 248(31)&ndash;(32)) ignores the advantage if it is no more than the lesser of $75 and 80% of FMV. If the advantage reaches or exceeds 80% of FMV, no receipt can be issued.</li>
+                <li><strong>Federal tax credits:</strong> 15% on the first $200, and 29% (or 33% if taxable income exceeds $235,675) on the remainder.</li>
+                <li><strong>Provincial tax credits</strong> vary by province and are applied to the same eligible amount.</li>
+                <li>Quebec has a separate provincial credit claimed on the Quebec return (TP1), not the federal return.</li>
+            </ul>
+        </details>
+    </main>
+
+    <footer>
+        This calculator provides estimates based on 2025 tax rates under the Income Tax Act (Canada). It does not constitute legal or tax advice. Consult a qualified advisor for your specific situation.<br>
+        &copy; Arato Legal
+    </footer>
+
+    <script>
+        // Provincial donation credit rates (2025)
+        const PROV_RATES = {
+            AB: { name: 'Alberta',                     low: 0.10,   high: 0.21   },
+            BC: { name: 'British Columbia',             low: 0.0506, high: 0.168  },
+            MB: { name: 'Manitoba',                     low: 0.108,  high: 0.174  },
+            NB: { name: 'New Brunswick',                low: 0.0968, high: 0.1795 },
+            NL: { name: 'Newfoundland and Labrador',    low: 0.087,  high: 0.183  },
+            NS: { name: 'Nova Scotia',                  low: 0.0879, high: 0.21   },
+            NT: { name: 'Northwest Territories',        low: 0.059,  high: 0.1405 },
+            NU: { name: 'Nunavut',                      low: 0.04,   high: 0.115  },
+            ON: { name: 'Ontario',                      low: 0.0505, high: 0.1116 },
+            PE: { name: 'Prince Edward Island',         low: 0.0965, high: 0.167  },
+            QC: { name: 'Quebec',                       low: 0.15,   high: 0.24   },
+            SK: { name: 'Saskatchewan',                 low: 0.105,  high: 0.145  },
+            YT: { name: 'Yukon',                        low: 0.064,  high: 0.128  },
+        };
+
+        const FEDERAL_TOP_BRACKET = 235675;
+        const FEDERAL_LOW = 0.15;
+        const FEDERAL_HIGH_29 = 0.29;
+        const FEDERAL_HIGH_33 = 0.33;
+        const FIRST_200 = 200;
+
+        // Format currency
+        const fmt = new Intl.NumberFormat('en-CA', { style: 'currency', currency: 'CAD' });
+        function fc(n) { return fmt.format(n); }
+
+        // State
+        let activeType = null;
+
+        // DOM
+        const typeCards = document.querySelectorAll('.type-card');
+        const forms = {
+            cash: document.getElementById('form-cash'),
+            giftInKind: document.getElementById('form-giftInKind'),
+            splitReceipt: document.getElementById('form-splitReceipt'),
+        };
+        const resultsEl = document.getElementById('results');
+        const resultsBody = document.getElementById('resultsBody');
+
+        // Type selection
+        typeCards.forEach(card => {
+            card.addEventListener('click', () => selectType(card.dataset.type));
+            card.addEventListener('keydown', e => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    selectType(card.dataset.type);
+                }
+            });
+        });
+
+        function selectType(type) {
+            activeType = type;
+            typeCards.forEach(c => {
+                const isActive = c.dataset.type === type;
+                c.classList.toggle('active', isActive);
+                c.setAttribute('aria-checked', isActive);
+            });
+            Object.entries(forms).forEach(([key, el]) => {
+                el.classList.toggle('visible', key === type);
+            });
+            calculate();
+        }
+
+        // Input listeners
+        document.querySelectorAll('input, select').forEach(el => {
+            el.addEventListener('input', calculate);
+        });
+
+        // Gift in Kind election logic
+        const gikFmvInput = document.getElementById('gikFmv');
+        const gikAcbInput = document.getElementById('gikAcb');
+        const electionSection = document.getElementById('electionSection');
+        const electionSlider = document.getElementById('electionSlider');
+        const electionValue = document.getElementById('electionValue');
+        const electionMin = document.getElementById('electionMin');
+        const electionMax = document.getElementById('electionMax');
+        const capitalGainNote = document.getElementById('capitalGainNote');
+
+        function updateElection() {
+            const fmv = parseFloat(gikFmvInput.value) || 0;
+            const acb = parseFloat(gikAcbInput.value) || 0;
+            const showElection = fmv > 1000 && fmv > acb;
+            electionSection.classList.toggle('visible', showElection);
+            if (showElection) {
+                electionSlider.min = Math.floor(acb);
+                electionSlider.max = Math.floor(fmv);
+                electionSlider.value = Math.floor(fmv);
+                updateElectionDisplay();
+            }
+        }
+
+        function updateElectionDisplay() {
+            const val = parseFloat(electionSlider.value) || 0;
+            const acb = parseFloat(gikAcbInput.value) || 0;
+            const fmv = parseFloat(gikFmvInput.value) || 0;
+            electionValue.textContent = fc(val);
+            electionMin.textContent = fc(acb) + ' (your cost)';
+            electionMax.textContent = fc(fmv) + ' (full FMV)';
+            const gain = Math.max(0, val - acb);
+            capitalGainNote.textContent = 'Capital gain at elected value: ' + fc(gain) + ' | At full FMV: ' + fc(Math.max(0, fmv - acb));
+        }
+
+        gikFmvInput.addEventListener('input', updateElection);
+        gikAcbInput.addEventListener('input', updateElection);
+        electionSlider.addEventListener('input', () => { updateElectionDisplay(); calculate(); });
+
+        // Main calculation
+        function calculate() {
+            const province = document.getElementById('province').value;
+            const income = parseFloat(document.getElementById('income').value) || 0;
+
+            if (!activeType) {
+                resultsEl.classList.remove('visible');
+                return;
+            }
+
+            let eligible = 0;
+            let noReceipt = false;
+
+            if (activeType === 'cash') {
+                eligible = parseFloat(document.getElementById('cashAmount').value) || 0;
+            } else if (activeType === 'giftInKind') {
+                const fmv = parseFloat(gikFmvInput.value) || 0;
+                const acb = parseFloat(gikAcbInput.value) || 0;
+                if (fmv > 1000 && fmv > acb) {
+                    eligible = parseFloat(electionSlider.value) || 0;
+                    eligible = Math.max(acb, Math.min(fmv, eligible));
+                } else {
+                    eligible = fmv;
+                }
+            } else if (activeType === 'splitReceipt') {
+                const giftFmv = parseFloat(document.getElementById('srFmv').value) || 0;
+                const advantage = parseFloat(document.getElementById('srAdvantage').value) || 0;
+                const threshold80 = giftFmv * 0.80;
+                const deMinimisLimit = Math.min(75, threshold80);
+                const msgContainer = document.getElementById('srMessages');
+                msgContainer.innerHTML = '';
+
+                if (giftFmv <= 0) {
+                    eligible = 0;
+                } else if (advantage <= deMinimisLimit) {
+                    eligible = giftFmv;
+                    if (advantage > 0) {
+                        msgContainer.innerHTML = '<div class="info-box info">De minimis rule applies: the advantage (' + fc(advantage) + ') does not exceed the lesser of $75 and 80% of FMV (' + fc(threshold80) + '). The full gift value is eligible.</div>';
+                    }
+                } else if (advantage >= threshold80) {
+                    eligible = 0;
+                    noReceipt = true;
+                    msgContainer.innerHTML = '<div class="info-box danger">No receipt can be issued. The advantage (' + fc(advantage) + ') equals or exceeds 80% of the FMV (' + fc(threshold80) + '), so the intention to make a gift is not established.</div>';
+                } else {
+                    eligible = giftFmv - advantage;
+                    msgContainer.innerHTML = '<div class="info-box warning">The advantage exceeds the de minimis threshold. Eligible amount is the FMV minus the advantage.</div>';
+                }
+            }
+
+            if (eligible <= 0 && !noReceipt) {
+                resultsEl.classList.remove('visible');
+                return;
+            }
+
+            // Calculate credits
+            const fedHighRate = income > FEDERAL_TOP_BRACKET ? FEDERAL_HIGH_33 : FEDERAL_HIGH_29;
+            const fedFirst200 = Math.min(eligible, FIRST_200) * FEDERAL_LOW;
+            const fedRemainder = Math.max(0, eligible - FIRST_200) * fedHighRate;
+            const fedTotal = fedFirst200 + fedRemainder;
+
+            const provRates = PROV_RATES[province];
+            const provFirst200 = Math.min(eligible, FIRST_200) * provRates.low;
+            const provRemainder = Math.max(0, eligible - FIRST_200) * provRates.high;
+            const provTotal = provFirst200 + provRemainder;
+
+            const totalCredit = fedTotal + provTotal;
+            const effectiveCost = Math.max(0, eligible - totalCredit);
+
+            if (noReceipt) {
+                resultsBody.innerHTML = '<div class="info-box danger" style="margin:0;">No donation receipt can be issued for this transaction.</div><button class="reset-btn" onclick="resetCalculator()">Reset</button>';
+                resultsEl.classList.add('visible');
+                resultsEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                return;
+            }
+
+            // Render results
+            let html = '';
+
+            html += row('Eligible receipt amount', fc(eligible));
+
+            html += '<div class="result-section-label">Federal Credit</div>';
+            html += row('15% on first $200', fc(fedFirst200));
+            html += row((income > FEDERAL_TOP_BRACKET ? '33%' : '29%') + ' on remainder', fc(fedRemainder));
+            html += '<div class="result-row subtotal"><span class="label">Federal subtotal</span><span class="value">' + fc(fedTotal) + '</span></div>';
+
+            html += '<div class="result-section-label">' + provRates.name + ' Credit</div>';
+            html += row((provRates.low * 100).toFixed(2) + '% on first $200', fc(provFirst200));
+            html += row((provRates.high * 100).toFixed(2) + '% on remainder', fc(provRemainder));
+            html += '<div class="result-row subtotal"><span class="label">Provincial subtotal</span><span class="value">' + fc(provTotal) + '</span></div>';
+
+            html += '<div class="result-row total"><span class="label">Total tax savings</span><span class="value">' + fc(totalCredit) + '</span></div>';
+            html += '<div class="result-row effective"><span class="label">Effective cost of donation</span><span class="value">' + fc(effectiveCost) + '</span></div>';
+
+            if (province === 'QC') {
+                html += '<div class="info-box warning" style="margin-top: 0.75rem;">Quebec provincial credits are claimed on the Quebec return (TP1), not the federal return. The rates shown are for Quebec\'s provincial donation credit.</div>';
+            }
+
+            html += '<button class="reset-btn" onclick="resetCalculator()">Reset</button>';
+
+            resultsBody.innerHTML = html;
+            resultsEl.classList.add('visible');
+            resultsEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function row(label, value) {
+            return '<div class="result-row"><span class="label">' + label + '</span><span class="value">' + value + '</span></div>';
+        }
+
+        function resetCalculator() {
+            activeType = null;
+            typeCards.forEach(c => {
+                c.classList.remove('active');
+                c.setAttribute('aria-checked', 'false');
+            });
+            Object.values(forms).forEach(f => f.classList.remove('visible'));
+            resultsEl.classList.remove('visible');
+            document.querySelectorAll('input[type="number"]').forEach(i => { i.value = ''; });
+            electionSection.classList.remove('visible');
+            document.getElementById('srMessages').innerHTML = '';
+        }
+    </script>
 </body>
 </html>
