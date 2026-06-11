@@ -110,6 +110,7 @@
         .field-row {
             display: flex;
             gap: 1rem;
+            flex-wrap: wrap;
         }
 
         .field-group {
@@ -490,6 +491,13 @@
             <h2>Your Information</h2>
             <div class="field-row">
                 <div class="field-group">
+                    <label for="taxYear">Tax Year</label>
+                    <select id="taxYear">
+                        <option value="2026" selected>2026</option>
+                        <option value="2025">2025</option>
+                    </select>
+                </div>
+                <div class="field-group">
                     <label for="province">Province / Territory</label>
                     <select id="province">
                         <option value="AB">Alberta</option>
@@ -609,7 +617,7 @@
                 <li><strong>Cash donations</strong> are receipted at face value.</li>
                 <li><strong>Gifts in kind</strong> are receipted at fair market value. If FMV exceeds both $1,000 and your cost, you may elect a lower deemed FMV to reduce the capital gain (ITA s. 118.1(6)). An independent appraisal may be required for property valued over $1,000.</li>
                 <li><strong>Split receipting</strong> applies when the donor receives an advantage. The eligible amount is FMV minus the advantage. A de minimis rule (ITA s. 248(31)&ndash;(32)) ignores the advantage if it is no more than the lesser of $75 and 80% of FMV. If the advantage reaches or exceeds 80% of FMV, no receipt can be issued.</li>
-                <li><strong>Federal tax credits:</strong> 15% on the first $200, and 29% (or 33% if taxable income exceeds $235,675) on the remainder.</li>
+                <li><strong>Federal tax credits:</strong> 15% on the first $200, and 29% (or 33% if taxable income exceeds the top bracket threshold for the selected tax year) on the remainder.</li>
                 <li><strong>Provincial tax credits</strong> vary by province and are applied to the same eligible amount.</li>
                 <li>Quebec has a separate provincial credit claimed on the Quebec return (TP1), not the federal return.</li>
             </ul>
@@ -617,29 +625,51 @@
     </main>
 
     <footer>
-        This calculator provides estimates based on 2025 tax rates under the Income Tax Act (Canada). It does not constitute legal or tax advice. Consult a qualified advisor for your specific situation.<br>
+        This calculator provides estimates based on the selected tax year's rates under the Income Tax Act (Canada). It does not constitute legal or tax advice. Consult a qualified advisor for your specific situation.<br>
         &copy; Arato Legal
     </footer>
 
     <script>
-        // Provincial donation credit rates (2025)
-        const PROV_RATES = {
-            AB: { name: 'Alberta',                     low: 0.10,   high: 0.21   },
-            BC: { name: 'British Columbia',             low: 0.0506, high: 0.168  },
-            MB: { name: 'Manitoba',                     low: 0.108,  high: 0.174  },
-            NB: { name: 'New Brunswick',                low: 0.0968, high: 0.1795 },
-            NL: { name: 'Newfoundland and Labrador',    low: 0.087,  high: 0.183  },
-            NS: { name: 'Nova Scotia',                  low: 0.0879, high: 0.21   },
-            NT: { name: 'Northwest Territories',        low: 0.059,  high: 0.1405 },
-            NU: { name: 'Nunavut',                      low: 0.04,   high: 0.115  },
-            ON: { name: 'Ontario',                      low: 0.0505, high: 0.1116 },
-            PE: { name: 'Prince Edward Island',         low: 0.0965, high: 0.167  },
-            QC: { name: 'Quebec',                       low: 0.15,   high: 0.24   },
-            SK: { name: 'Saskatchewan',                 low: 0.105,  high: 0.145  },
-            YT: { name: 'Yukon',                        low: 0.064,  high: 0.128  },
+        // Tax rates by year
+        const TAX_YEARS = {
+            2025: {
+                federalTopBracket: 235675,
+                provRates: {
+                    AB: { name: 'Alberta',                     low: 0.10,   high: 0.21   },
+                    BC: { name: 'British Columbia',             low: 0.0506, high: 0.168  },
+                    MB: { name: 'Manitoba',                     low: 0.108,  high: 0.174  },
+                    NB: { name: 'New Brunswick',                low: 0.0968, high: 0.1795 },
+                    NL: { name: 'Newfoundland and Labrador',    low: 0.087,  high: 0.183  },
+                    NS: { name: 'Nova Scotia',                  low: 0.0879, high: 0.21   },
+                    NT: { name: 'Northwest Territories',        low: 0.059,  high: 0.1405 },
+                    NU: { name: 'Nunavut',                      low: 0.04,   high: 0.115  },
+                    ON: { name: 'Ontario',                      low: 0.0505, high: 0.1116 },
+                    PE: { name: 'Prince Edward Island',         low: 0.0965, high: 0.167  },
+                    QC: { name: 'Quebec',                       low: 0.15,   high: 0.24   },
+                    SK: { name: 'Saskatchewan',                 low: 0.105,  high: 0.145  },
+                    YT: { name: 'Yukon',                        low: 0.064,  high: 0.128  },
+                },
+            },
+            2026: {
+                federalTopBracket: 242840,
+                provRates: {
+                    AB: { name: 'Alberta',                     low: 0.10,   high: 0.21   },
+                    BC: { name: 'British Columbia',             low: 0.0506, high: 0.168  },
+                    MB: { name: 'Manitoba',                     low: 0.108,  high: 0.174  },
+                    NB: { name: 'New Brunswick',                low: 0.0968, high: 0.1795 },
+                    NL: { name: 'Newfoundland and Labrador',    low: 0.087,  high: 0.183  },
+                    NS: { name: 'Nova Scotia',                  low: 0.0879, high: 0.21   },
+                    NT: { name: 'Northwest Territories',        low: 0.059,  high: 0.1405 },
+                    NU: { name: 'Nunavut',                      low: 0.04,   high: 0.115  },
+                    ON: { name: 'Ontario',                      low: 0.0505, high: 0.1116 },
+                    PE: { name: 'Prince Edward Island',         low: 0.0965, high: 0.167  },
+                    QC: { name: 'Quebec',                       low: 0.15,   high: 0.24   },
+                    SK: { name: 'Saskatchewan',                 low: 0.105,  high: 0.145  },
+                    YT: { name: 'Yukon',                        low: 0.064,  high: 0.128  },
+                },
+            },
         };
 
-        const FEDERAL_TOP_BRACKET = 235675;
         const FEDERAL_LOW = 0.15;
         const FEDERAL_HIGH_29 = 0.29;
         const FEDERAL_HIGH_33 = 0.33;
@@ -731,8 +761,10 @@
 
         // Main calculation
         function calculate() {
+            const year = document.getElementById('taxYear').value;
             const province = document.getElementById('province').value;
             const income = parseFloat(document.getElementById('income').value) || 0;
+            const yearData = TAX_YEARS[year];
 
             if (!activeType) {
                 resultsEl.classList.remove('visible');
@@ -783,13 +815,14 @@
                 return;
             }
 
-            // Calculate credits
-            const fedHighRate = income > FEDERAL_TOP_BRACKET ? FEDERAL_HIGH_33 : FEDERAL_HIGH_29;
+            // Calculate credits using selected year's rates
+            const topBracket = yearData.federalTopBracket;
+            const fedHighRate = income > topBracket ? FEDERAL_HIGH_33 : FEDERAL_HIGH_29;
             const fedFirst200 = Math.min(eligible, FIRST_200) * FEDERAL_LOW;
             const fedRemainder = Math.max(0, eligible - FIRST_200) * fedHighRate;
             const fedTotal = fedFirst200 + fedRemainder;
 
-            const provRates = PROV_RATES[province];
+            const provRates = yearData.provRates[province];
             const provFirst200 = Math.min(eligible, FIRST_200) * provRates.low;
             const provRemainder = Math.max(0, eligible - FIRST_200) * provRates.high;
             const provTotal = provFirst200 + provRemainder;
@@ -808,10 +841,11 @@
             let html = '';
 
             html += row('Eligible receipt amount', fc(eligible));
+            html += row('Tax year', year);
 
             html += '<div class="result-section-label">Federal Credit</div>';
             html += row('15% on first $200', fc(fedFirst200));
-            html += row((income > FEDERAL_TOP_BRACKET ? '33%' : '29%') + ' on remainder', fc(fedRemainder));
+            html += row((income > topBracket ? '33%' : '29%') + ' on remainder', fc(fedRemainder));
             html += '<div class="result-row subtotal"><span class="label">Federal subtotal</span><span class="value">' + fc(fedTotal) + '</span></div>';
 
             html += '<div class="result-section-label">' + provRates.name + ' Credit</div>';
